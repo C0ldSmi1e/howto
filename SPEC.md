@@ -30,7 +30,7 @@ $ lsof -ti:3000 | xargs kill -9▌        ← pre-typed at the prompt; Enter run
 
 | Context | Behavior |
 |---|---|
-| Wrapped (`eval "$(howto --init zsh)"` installed) | explanation on stderr → command lands pre-typed at the prompt via `print -z` |
+| Wrapped (`eval "$(howto --init zsh)"` installed) | full answer on stderr (command echoed first, explanation beneath) → command also lands pre-typed at the prompt via `print -z`, so scrollback stays complete after the injected line is edited or run |
 | Unwrapped, stdout is a TTY | everything rendered numbered; bare command on stdout (bold); one-time hint to install the wrapper |
 | Piped / `-p` | bare command on stdout, nothing else |
 | `-j` | full structured JSON on stdout |

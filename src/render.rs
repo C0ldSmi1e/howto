@@ -116,20 +116,22 @@ fn print_alternatives(s: &Suggestion, err: &Style) {
     }
 }
 
+// The command is echoed into the answer as well as injected at the prompt:
+// the injected line gets edited or executed away, and the scrollback should
+// keep a complete record of what was suggested.
 fn render_wrapped(s: &Suggestion) {
     let err = Style::stderr();
+    let inject = s.danger < Danger::High;
+    eprintln!("{}", err.bold(&s.command));
     eprintln!("{}", err.dim(&format!("  {}", s.explanation)));
     print_danger(s, &err);
-    print_breakdown(s, &err);
-    let inject = s.danger < Danger::High;
     if !inject {
         eprintln!(
             "{}",
             err.red("  ⚠ not typed at your prompt — run `howto 1` to load it deliberately")
         );
-        eprintln!("{}", err.dim("  [1]"));
-        eprintln!("{}", s.command);
     }
+    print_breakdown(s, &err);
     print_alternatives(s, &err);
     if inject {
         println!("{}", s.command);

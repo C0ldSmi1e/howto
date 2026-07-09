@@ -92,12 +92,7 @@ fn run(cli: cli::Cli) -> Result<i32> {
         if mode == Mode::Json {
             println!("{}", serde_json::to_string_pretty(&suggestion)?);
         } else {
-            let why: &str = if suggestion.cannot_help.is_empty() {
-                "the model returned no usable command"
-            } else {
-                suggestion.cannot_help.as_str()
-            };
-            eprintln!("howto: {why}");
+            eprintln!("howto: {}", refusal_reason(&suggestion.cannot_help));
         }
         return Ok(2);
     }
@@ -154,7 +149,19 @@ fn recall(mode: Mode, n: usize) -> Result<i32> {
     Ok(0)
 }
 
+/// The model occasionally leaks tool-call syntax into text fields; never show that.
+fn refusal_reason(cannot_help: &str) -> &str {
+    let looks_like_tool_garbage =
+        cannot_help.contains("antml") || cannot_help.contains("<parameter");
+    if cannot_help.is_empty() || looks_like_tool_garbage {
+        "the model returned no usable command"
+    } else {
+        cannot_help
+    }
+}
+
 fn show_config(cfg: &config::Config, just_created: bool) -> Result<i32> {
+
     let (shell, shell_source) = context::shell_name(cfg.shell_override.as_deref());
     println!("config   {}", config::config_path().display());
     println!("state    {}", state::state_dir().join("last.json").display());
@@ -171,4 +178,17 @@ fn show_config(cfg: &config::Config, just_created: bool) -> Result<i32> {
         println!("created the config file with commented defaults — edit it to change settings");
     }
     Ok(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::refusal_reason;
+
+    #[test]
+    fn refusal_reason_hides_tool_syntax_garbage() {
+        assert_eq!(refusal_reason("this needs a GUI, not a shell"), "this needs a GUI, not a shell");
+        for garbage in ["", "</antml-parameter>\n<parameter name=\"command\">ls -la", "<parameter name=\"x\">"] {
+            assert_eq!(refusal_reason(garbage), "the model returned no usable command");
+        }
+    }
 }
