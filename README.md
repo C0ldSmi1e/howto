@@ -18,10 +18,17 @@ the command lands at your prompt and you decide.
 
 ## Install
 
-Requires Rust and an [Anthropic API key](https://platform.claude.com/).
+```sh
+curl -LsSf https://github.com/C0ldSmi1e/howto/releases/latest/download/howto-installer.sh | sh
+```
+
+(Prebuilt for macOS and Linux, both arches. Yes — howto itself flags `curl | sh` as
+high-danger; read the script first, that's the point. With Rust installed you can
+`cargo install --path .` from a checkout instead.)
+
+You'll need an [Anthropic API key](https://platform.claude.com/):
 
 ```sh
-cargo install --path .                        # from this checkout
 export ANTHROPIC_API_KEY=sk-ant-...           # or: api_key in `howto --config`
 ```
 
