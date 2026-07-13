@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Ask in plain words, get a shell command typed at your prompt"
 license = "MIT"
+repository = "https://github.com/C0ldSmi1e/howto"
 
 [dependencies]
 anyhow = "1"
@@ -17,3 +18,8 @@ ureq = { version = "2", features = ["json"] }
 [profile.release]
 lto = true
 strip = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
