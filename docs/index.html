@@ -4,104 +4,87 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>howto</title>
-<meta name="description" content="howto turns a plain-English question into a runnable shell command — pre-typed at your prompt, explained, and never executed for you.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Archivo:ital,wght@0,400;0,500;0,600;1,400&family=Fragment+Mono:ital@0;1&display=swap">
+<meta name="description" content="howto answers a plain-English question with a runnable shell command — pre-typed at your prompt, explained, and never executed for you.">
 <style>
   :root {
-    --paper: #f4f4f1;
-    --ink: #16171c;
-    --dim: #5c5e66;
-    --rule: #16171c;
-    --hairline: #d8d8d2;
-    --cobalt: #1f36d8;
-    --cobalt-ink: #ffffff;   /* text on cobalt */
-    --chip: #e9e9e4;
-    /* terminal card — committed dark, both themes */
-    --t-bg: #101116;
-    --t-ink: #e6e7ee;
-    --t-dim: #878a99;
-    --t-faint: #5a5d6e;
-    --t-accent: #8493ff;
-    --t-warn: #ffb454;
-    --display: "Bricolage Grotesque", "Arial Black", sans-serif;
-    --body: "Archivo", Helvetica, Arial, sans-serif;
-    --mono: "Fragment Mono", ui-monospace, Menlo, Consolas, monospace;
+    --bg: #fdfdfc;
+    --ink: #1c1c1b;
+    --gray: #6f6f6c;
+    --faint: #a5a5a1;
+    --hairline: #e9e9e6;
+    --well: #f5f5f3;
+    /* terminal — dark in both themes */
+    --t-bg: #191b1f;
+    --t-ink: #d8dade;
+    --t-dim: #82868f;
+    --t-faint: #565a63;
+    --t-green: #98c379;
+    --t-warn: #d8a657;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: #14151b;
-      --ink: #eceded;
-      --dim: #9599a6;
-      --rule: #eceded;
-      --hairline: #32343e;
-      --cobalt: #1f36d8;
-      --cobalt-ink: #ffffff;
-      --chip: #1f2029;
+      --bg: #151514;
+      --ink: #e6e6e3;
+      --gray: #9a9a96;
+      --faint: #63635f;
+      --hairline: #2b2b29;
+      --well: #1e1e1c;
+      --t-bg: #1d1f24;
     }
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
-    font-family: var(--body);
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
   }
-  .shell { max-width: 66rem; margin: 0 auto; padding: 0 1.25rem; }
-
-  a { color: inherit; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
-  a:hover { color: var(--cobalt); }
-  a:focus-visible, button:focus-visible { outline: 2.5px solid var(--cobalt); outline-offset: 3px; }
-  ::selection { background: var(--cobalt); color: var(--cobalt-ink); }
-
-  /* ── top bar ── */
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 1.1rem 0;
-    border-bottom: 2.5px solid var(--rule);
+  .page {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.25rem 4rem;
   }
-  .topbar .mark { font-family: var(--display); font-weight: 800; font-size: 1.15rem; letter-spacing: -.01em; }
-  .topbar nav { display: flex; gap: 1.5rem; font-size: .85rem; font-weight: 500; }
-  .topbar nav a { text-decoration: none; }
-  .topbar nav a:hover { text-decoration: underline; }
 
-  /* ── hero ── */
-  .hero { background: var(--cobalt); color: var(--cobalt-ink); }
-  .hero .shell { padding-top: 4.5rem; padding-bottom: 9.5rem; }
-  .hero h1 {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: clamp(2.6rem, 7.5vw, 5rem);
-    line-height: .98;
-    letter-spacing: -.025em;
-    max-width: 14ch;
-    text-wrap: balance;
-  }
-  .hero .sub {
-    margin-top: 1.75rem;
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
-    max-width: 34rem;
-    color: color-mix(in srgb, var(--cobalt-ink) 82%, var(--cobalt));
-  }
-  .hero .sub strong { color: var(--cobalt-ink); font-weight: 600; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 2.5px; }
+  a:hover { text-decoration-color: var(--ink); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--gray); outline-offset: 3px; border-radius: 2px; }
 
-  /* ── terminal, straddling the hero edge ── */
-  .term-wrap { margin-top: -7.5rem; padding-bottom: 1rem; }
-  .terminal {
-    background: var(--t-bg);
-    color: var(--t-ink);
-    border: 2.5px solid var(--rule);
-    padding: 1.35rem 1.5rem;
+  header .title {
     font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  header .title .dollar { color: var(--faint); font-weight: 400; }
+  header .lede {
+    margin-top: 1.1rem;
+    font-size: 1.05rem;
+    max-width: 33rem;
+  }
+  header .lede .q { color: var(--gray); }
+  header .meta {
+    margin-top: .9rem;
     font-size: .85rem;
+    color: var(--gray);
+    display: flex;
+    gap: 1.1rem;
+  }
+
+  /* terminal demo */
+  .terminal {
+    margin-top: 2.25rem;
+    background: var(--t-bg);
+    border-radius: 8px;
+    padding: 1.05rem 1.2rem;
+    font-family: var(--mono);
+    font-size: .8rem;
     line-height: 1.8;
+    color: var(--t-ink);
     overflow-x: auto;
   }
   .terminal pre {
@@ -109,163 +92,121 @@
     white-space: pre;
     min-height: calc(1.8em * 6);
   }
-  .terminal .p    { color: var(--t-accent); }
+  .terminal .p    { color: var(--t-green); }
   .terminal .cmd  { color: #ffffff; }
   .terminal .dim  { color: var(--t-dim); }
   .terminal .warn { color: var(--t-warn); }
-  .terminal .hint { color: var(--t-faint); font-style: italic; }
+  .terminal .hint { color: var(--t-faint); }
   .cursor {
     display: inline-block;
     width: .6em; height: 1.05em;
     margin-bottom: -.15em;
-    background: var(--t-accent);
+    background: var(--t-ink);
     animation: blink 1.1s steps(1) infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
 
-  /* ── swiss section grid ── */
-  section { margin-top: 4.5rem; }
-  .sec {
-    border-top: 2.5px solid var(--rule);
-    padding-top: 1.25rem;
-    display: grid;
-    gap: 1rem 3rem;
-  }
-  @media (min-width: 760px) {
-    .sec { grid-template-columns: 13rem 1fr; }
-  }
-  .sec .label {
-    font-family: var(--mono);
-    font-size: .78rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--dim);
-  }
-  .sec h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(1.6rem, 3.4vw, 2.3rem);
-    line-height: 1.08;
-    letter-spacing: -.02em;
-    text-wrap: balance;
-    max-width: 20ch;
-  }
-  .sec .content > * + * { margin-top: 1rem; }
-  .sec p { max-width: 40rem; }
-  .sec p, .sec dd, .sec li { color: var(--dim); }
-  .sec p strong, .sec li strong { color: var(--ink); font-weight: 600; }
-  .sec em { font-style: italic; }
+  section { margin-top: 3rem; }
+  h2 { font-size: 1rem; font-weight: 600; }
+  section > p, section > ul, section > ol { margin-top: .8rem; color: var(--gray); }
+  section p + p { margin-top: .8rem; }
+  section strong { color: var(--ink); font-weight: 600; }
+  section em { font-style: italic; }
+  p { max-width: 36rem; }
 
   code {
     font-family: var(--mono);
     font-size: .84em;
-    background: var(--chip);
-    padding: .12em .4em;
+    background: var(--well);
+    border-radius: 4px;
+    padding: .1em .35em;
     white-space: nowrap;
   }
 
   pre.sh {
-    background: var(--chip);
-    border-left: 2.5px solid var(--cobalt);
-    padding: .9rem 1.15rem;
+    background: var(--well);
+    border-radius: 6px;
+    padding: .75rem 1rem;
     font-family: var(--mono);
-    font-size: .84rem;
+    font-size: .8rem;
     line-height: 1.7;
     overflow-x: auto;
+    color: var(--ink);
   }
-  pre.sh .c { color: var(--dim); }
-  pre.sh .p { color: var(--cobalt); user-select: none; }
-  @media (prefers-color-scheme: dark) {
-    pre.sh .p { color: #8493ff; }
-  }
+  pre.sh .c { color: var(--faint); }
 
-  .copywrap { position: relative; }
-  .copywrap pre { padding-right: 5rem; }
+  .copywrap { position: relative; margin-top: .6rem; }
+  .copywrap pre { padding-right: 4.5rem; }
   .copywrap button {
     position: absolute;
-    top: .6rem; right: .6rem;
+    top: .5rem; right: .5rem;
     font-family: var(--mono);
-    font-size: .72rem;
-    color: var(--dim);
-    background: var(--paper);
-    border: 1.5px solid var(--hairline);
-    padding: .18rem .55rem;
+    font-size: .7rem;
+    color: var(--gray);
+    background: var(--bg);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: .15rem .5rem;
     cursor: pointer;
   }
-  .copywrap button:hover { color: var(--ink); border-color: var(--ink); }
+  .copywrap button:hover { color: var(--ink); }
 
-  /* install steps */
   .steps { list-style: none; }
-  .steps > li { display: grid; grid-template-columns: 2.4rem 1fr; gap: 0 .5rem; }
-  .steps > li + li { margin-top: 1.75rem; }
-  .steps .n {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: 1.35rem;
-    color: var(--cobalt);
-    line-height: 1.45;
-  }
-  @media (prefers-color-scheme: dark) { .steps .n { color: #8493ff; } }
-  .steps .step-body > * + * { margin-top: .7rem; }
-  .steps p { color: var(--dim); }
-
-  /* options table */
-  .opts { width: 100%; border-collapse: collapse; font-size: .95rem; }
-  .opts td { padding: .55rem 1rem .55rem 0; border-bottom: 1.5px solid var(--hairline); vertical-align: baseline; }
-  .opts td:first-child { white-space: nowrap; width: 11rem; }
-  .opts td:last-child { color: var(--dim); }
-  .table-scroll { overflow-x: auto; }
-
-  /* safety list */
-  .safety { list-style: none; max-width: 40rem; }
-  .safety li { padding-left: 1.5rem; position: relative; }
-  .safety li + li { margin-top: .9rem; }
-  .safety li::before {
-    content: "→";
+  .steps > li { padding-left: 1.4rem; position: relative; }
+  .steps > li + li { margin-top: 1.2rem; }
+  .steps > li::before {
+    content: attr(data-n) ".";
     position: absolute;
     left: 0;
     font-family: var(--mono);
-    color: var(--cobalt);
+    font-size: .8rem;
+    color: var(--faint);
+    top: .15em;
   }
-  @media (prefers-color-scheme: dark) { .safety li::before { color: #8493ff; } }
+  .steps pre.sh { margin-top: .5rem; }
+
+  .flags { margin-top: .8rem; }
+  .flags div {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 1rem;
+    padding: .4rem 0;
+    border-top: 1px solid var(--hairline);
+    color: var(--gray);
+    font-size: .92rem;
+  }
+  .flags div:last-child { border-bottom: 1px solid var(--hairline); }
+  .flags code { background: none; padding: 0; color: var(--ink); }
+
+  ul.plain { list-style: none; }
+  ul.plain li { padding-left: 1.1rem; position: relative; }
+  ul.plain li + li { margin-top: .55rem; }
+  ul.plain li::before { content: "–"; position: absolute; left: 0; color: var(--faint); }
 
   footer {
-    margin-top: 5rem;
-    border-top: 2.5px solid var(--rule);
-    padding: 1.1rem 0 3rem;
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    flex-wrap: wrap;
-    font-size: .85rem;
-    color: var(--dim);
+    margin-top: 3.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--hairline);
+    font-size: .82rem;
+    color: var(--faint);
   }
-  footer .links { display: flex; gap: 1.5rem; }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="hero">
-  <div class="shell">
-    <div class="topbar" style="border-color: currentColor;">
-      <span class="mark">howto</span>
-      <nav>
-        <a href="#install">Install</a>
-        <a href="#usage">Usage</a>
-        <a href="https://github.com/C0ldSmi1e/howto">GitHub&thinsp;↗</a>
-      </nav>
+  <header>
+    <div class="title"><span class="dollar">$</span> howto</div>
+    <p class="lede">Ask your terminal in plain words. It answers with a runnable
+    command — pre-typed at your prompt, explained, and never executed for you.</p>
+    <div class="meta">
+      <a href="https://github.com/C0ldSmi1e/howto">GitHub</a>
+      <a href="https://github.com/C0ldSmi1e/howto/blob/main/SPEC.md">Spec</a>
+      <a href="https://github.com/C0ldSmi1e/howto/releases/latest">Releases</a>
     </div>
-  </div>
-  <div class="shell">
-    <h1>Ask your terminal in plain words.</h1>
-    <p class="sub">howto turns a question into a runnable shell command —
-    <strong>pre-typed at your prompt</strong>, explained, and never executed
-    for you. It knows your OS, your shell, and what's installed.</p>
-  </div>
-</div>
+  </header>
 
-<div class="shell term-wrap">
   <div class="terminal" role="img" aria-label="Terminal demo: howto answers a plain-English question with a shell command, which lands pre-typed at the prompt.">
 <pre id="demo-screen"><span class="p">$</span> howto kill whatever is using port 3000
 <span class="cmd">lsof -ti:3000 | xargs kill -9</span>
@@ -274,128 +215,80 @@
 <span class="dim">  [2] kill $(lsof -ti:3000) — let it shut down cleanly</span>
 <span class="p">$</span> lsof -ti:3000 | xargs kill -9<span class="cursor"></span>  <span class="hint">← Enter runs it. Ctrl-C discards.</span></pre>
   </div>
-</div>
-
-<main class="shell">
 
   <section>
-    <div class="sec">
-      <div class="label">How it works</div>
-      <div class="content">
-        <h2>Question in. Command out. Nothing runs.</h2>
-        <p><strong>howto is a pure suggestion engine.</strong> With the shell
-        wrapper installed, the answer doesn't just print — it lands pre-typed
-        at your prompt, so Enter runs it, your own line editor edits it, and
-        Ctrl-C throws it away. The binary itself never executes anything and
-        never blocks on input.</p>
-        <p>Every question is answered <em>for this machine</em>. The prompt
-        sent to the model includes your OS, shell, installed binaries, and
-        project markers — so "kill port 3000" answers with <code>lsof</code>
-        on macOS and <code>fuser</code> where that's what exists.</p>
-        <p>It behaves in pipes and scripts, too: stdout carries only the
-        command, everything else goes to stderr. <code>-p</code> prints the
-        bare command, <code>-j</code> structured JSON, and exit codes are an
-        API — <code>0</code> ok, <code>1</code> error, <code>2</code> no
-        sensible command. Agents can drive it without ever hanging on a
-        prompt.</p>
-      </div>
-    </div>
+    <h2>How it works</h2>
+    <p><strong>howto never runs anything.</strong> With the shell wrapper
+    installed, the answer lands pre-typed at your own prompt — Enter runs it,
+    your line editor edits it, Ctrl-C throws it away.</p>
+    <p>Answers are for <em>this machine</em>: it knows your OS, shell,
+    installed tools, and the project you're standing in — so "kill port 3000"
+    uses <code>lsof</code> on macOS and <code>fuser</code> where that's what
+    exists.</p>
+    <p>In pipes and scripts, stdout carries only the command; explanations go
+    to stderr. <code>-p</code> gives the bare command, <code>-j</code> JSON,
+    and exit codes mean something: <code>0</code> ok, <code>1</code> error,
+    <code>2</code> no sensible command.</p>
   </section>
 
   <section id="install">
-    <div class="sec">
-      <div class="label">Install</div>
-      <div class="content">
-        <h2>Ninety seconds to set up.</h2>
-        <ol class="steps" style="margin-top:1.5rem">
-          <li>
-            <span class="n">1</span>
-            <div class="step-body">
-              <p>Install the binary — prebuilt for macOS and Linux, or
-              <code>cargo install --path .</code> from a checkout.</p>
-              <div class="copywrap">
-                <pre class="sh" id="curl-cmd">curl -LsSf https://github.com/C0ldSmi1e/howto/releases/latest/download/howto-installer.sh | sh</pre>
-                <button type="button" data-copy="curl-cmd">copy</button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <span class="n">2</span>
-            <div class="step-body">
-              <p>Set your API key — get one at
-              <a href="https://platform.claude.com">platform.claude.com</a>.</p>
-              <pre class="sh">export ANTHROPIC_API_KEY=sk-ant-...</pre>
-            </div>
-          </li>
-          <li>
-            <span class="n">3</span>
-            <div class="step-body">
-              <p>Add the shell wrapper — the part that puts commands at your
-              prompt. Without it, howto simply prints them.</p>
-              <pre class="sh"><span class="c"># ~/.zshrc   (bash: --init bash)</span>
+    <h2>Install</h2>
+    <ol class="steps" style="margin-top:1rem">
+      <li data-n="1">
+        Install the binary (macOS and Linux; or <code>cargo install --path .</code>):
+        <div class="copywrap">
+          <pre class="sh" id="curl-cmd">curl -LsSf https://github.com/C0ldSmi1e/howto/releases/latest/download/howto-installer.sh | sh</pre>
+          <button type="button" data-copy="curl-cmd">copy</button>
+        </div>
+      </li>
+      <li data-n="2">
+        Set your API key (<a href="https://platform.claude.com">platform.claude.com</a>):
+        <pre class="sh" style="margin-top:.5rem">export ANTHROPIC_API_KEY=sk-ant-...</pre>
+      </li>
+      <li data-n="3">
+        Add the wrapper — the part that puts commands at your prompt:
+        <pre class="sh" style="margin-top:.5rem"><span class="c"># ~/.zshrc   (bash: --init bash)</span>
 eval "$(howto --init zsh)"</pre>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </div>
+      </li>
+    </ol>
   </section>
 
   <section id="usage">
-    <div class="sec">
-      <div class="label">Usage</div>
-      <div class="content">
-        <h2>One command, a few flags.</h2>
-        <p>No quotes, no subcommands — everything after <code>howto</code> is
-        your question:</p>
-        <pre class="sh"><span class="p">$</span> howto compress this folder into a tar.gz
-<span class="p">$</span> howto 2          <span class="c"># take option [2] from the last answer</span>
-<span class="p">$</span> howto --last     <span class="c"># show the last answer again — no API call</span></pre>
-        <div class="table-scroll">
-          <table class="opts">
-            <tr><td><code>-p, --print</code></td><td>bare command on stdout, nothing else</td></tr>
-            <tr><td><code>-j, --json</code></td><td>structured JSON result, for scripts and agents</td></tr>
-            <tr><td><code>--explain</code></td><td>part-by-part breakdown of the command</td></tr>
-            <tr><td><code>--last</code></td><td>re-show the last answer, every command numbered</td></tr>
-            <tr><td><code>--init &lt;shell&gt;</code></td><td>print the shell wrapper (zsh, bash)</td></tr>
-            <tr><td><code>--config</code></td><td>config path and resolved settings</td></tr>
-            <tr><td><code>-v, --verbose</code></td><td>detected context, model, and latency on stderr</td></tr>
-          </table>
-        </div>
-      </div>
+    <h2>Usage</h2>
+    <p>No quotes, no subcommands — everything after <code>howto</code> is your
+    question.</p>
+    <pre class="sh" style="margin-top:.6rem">howto compress this folder into a tar.gz
+howto 2        <span class="c"># take option [2] from the last answer</span>
+howto --last   <span class="c"># show the last answer again — no API call</span></pre>
+    <div class="flags">
+      <div><code>-p, --print</code>    <span>bare command on stdout, nothing else</span></div>
+      <div><code>-j, --json</code>     <span>structured JSON, for scripts and agents</span></div>
+      <div><code>--explain</code>      <span>part-by-part breakdown</span></div>
+      <div><code>--last</code>         <span>re-show the last answer, commands numbered</span></div>
+      <div><code>--init &lt;shell&gt;</code> <span>print the shell wrapper (zsh, bash)</span></div>
+      <div><code>--config</code>       <span>config path and resolved settings</span></div>
+      <div><code>-v, --verbose</code>  <span>context, model, latency on stderr</span></div>
     </div>
   </section>
 
   <section id="safety">
-    <div class="sec">
-      <div class="label">Safety</div>
-      <div class="content">
-        <h2>The dangerous path is always deliberate.</h2>
-        <ul class="safety" style="margin-top:1.25rem">
-          <li><strong>Nothing runs until you press Enter</strong> at your own
-          prompt. There is no <code>-y</code>, on purpose.</li>
-          <li><strong>Risky commands carry a <code>⚠ reason</code>.</strong>
-          A local blocklist catches <code>rm -rf /</code>-class commands,
-          <code>dd</code> to raw devices, fork bombs, and
-          <code>curl | sh</code> — regardless of what the model says.</li>
-          <li><strong>High-danger commands are never pre-typed.</strong> They
-          appear numbered, and typing <code>howto 1</code> is the deliberate
-          act that loads one.</li>
-        </ul>
-      </div>
-    </div>
+    <h2>Safety</h2>
+    <ul class="plain">
+      <li>Nothing runs until you press Enter at your own prompt. There is no
+      <code>-y</code>, on purpose.</li>
+      <li>Risky commands carry a <code>⚠ reason</code>; a local blocklist
+      catches <code>rm -rf /</code>-class commands regardless of what the
+      model says.</li>
+      <li>High-danger commands are never pre-typed — they appear numbered, and
+      <code>howto 1</code> is the deliberate act that loads one.</li>
+    </ul>
   </section>
 
   <footer>
-    <span>MIT license · built in Rust · powered by the Claude API</span>
-    <span class="links">
-      <a href="https://github.com/C0ldSmi1e/howto">GitHub</a>
-      <a href="https://github.com/C0ldSmi1e/howto/blob/main/SPEC.md">Spec</a>
-      <a href="https://github.com/C0ldSmi1e/howto/releases/latest">Releases</a>
-    </span>
+    MIT license · built in Rust · powered by the Claude API
   </footer>
 
-</main>
+</div>
 
 <script>
 (function () {
