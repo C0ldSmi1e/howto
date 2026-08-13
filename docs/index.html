@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>howto</title>
+<meta name="description" content="howto answers a plain-English question with a runnable shell command — pre-typed at your prompt, explained, and never executed for you.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #fdfdfc;
+    --ink: #1c1c1b;
+    --gray: #6f6f6c;
+    --faint: #a5a5a1;
+    --hairline: #e9e9e6;
+    --well: #f5f5f3;
+    /* terminal — dark in both themes */
+    --t-bg: #191b1f;
+    --t-ink: #d8dade;
+    --t-dim: #82868f;
+    --t-faint: #565a63;
+    --t-green: #98c379;
+    --t-warn: #d8a657;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.25rem 4rem;
+  }
+
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 2.5px; }
+  a:hover { text-decoration-color: var(--ink); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--gray); outline-offset: 3px; border-radius: 2px; }
+
+  header .title {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  header .title .dollar { color: var(--faint); font-weight: 400; }
+  header .lede {
+    margin-top: 1.1rem;
+    font-size: 1.05rem;
+    max-width: 33rem;
+  }
+  header .lede .q { color: var(--gray); }
+  header .meta {
+    margin-top: .9rem;
+    font-size: .85rem;
+    color: var(--gray);
+    display: flex;
+    gap: 1.1rem;
+  }
+
+  /* terminal demo */
+  .terminal {
+    margin-top: 2.25rem;
+    background: var(--t-bg);
+    border-radius: 8px;
+    padding: 1.05rem 1.2rem;
+    font-family: var(--mono);
+    font-size: .8rem;
+    line-height: 1.8;
+    color: var(--t-ink);
+    overflow-x: auto;
+  }
+  .terminal pre {
+    font: inherit;
+    white-space: pre;
+    min-height: calc(1.8em * 6);
+  }
+  .terminal .p    { color: var(--t-green); }
+  .terminal .cmd  { color: #ffffff; }
+  .terminal .dim  { color: var(--t-dim); }
+  .terminal .warn { color: var(--t-warn); }
+  .terminal .hint { color: var(--t-faint); }
+  .cursor {
+    display: inline-block;
+    width: .6em; height: 1.05em;
+    margin-bottom: -.15em;
+    background: var(--t-ink);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+
+  section { margin-top: 3rem; }
+  h2 { font-size: 1rem; font-weight: 600; }
+  section > p, section > ul, section > ol { margin-top: .8rem; color: var(--gray); }
+  section p + p { margin-top: .8rem; }
+  section strong { color: var(--ink); font-weight: 600; }
+  section em { font-style: italic; }
+  p { max-width: 36rem; }
+
+  code {
+    font-family: var(--mono);
+    font-size: .84em;
+    background: var(--well);
+    border-radius: 4px;
+    padding: .1em .35em;
+    white-space: nowrap;
+  }
+
+  pre.sh {
+    background: var(--well);
+    border-radius: 6px;
+    padding: .75rem 1rem;
+    font-family: var(--mono);
+    font-size: .8rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--ink);
+  }
+  pre.sh .c { color: var(--faint); }
+
+  .copywrap { position: relative; margin-top: .6rem; }
+  .copywrap pre { padding-right: 4.5rem; }
+  .copywrap button {
+    position: absolute;
+    top: .5rem; right: .5rem;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--gray);
+    background: var(--bg);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: .15rem .5rem;
+    cursor: pointer;
+  }
+  .copywrap button:hover { color: var(--ink); }
+
+  .steps { list-style: none; }
+  .steps > li { padding-left: 1.4rem; position: relative; }
+  .steps > li + li { margin-top: 1.2rem; }
+  .steps > li::before {
+    content: attr(data-n) ".";
+    position: absolute;
+    left: 0;
+    font-family: var(--mono);
+    font-size: .8rem;
+    color: var(--faint);
+    top: .15em;
+  }
+  .steps pre.sh { margin-top: .5rem; }
+
+  .flags { margin-top: .8rem; }
+  .flags div {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 1rem;
+    padding: .4rem 0;
+    border-top: 1px solid var(--hairline);
+    color: var(--gray);
+    font-size: .92rem;
+  }
+  .flags div:last-child { border-bottom: 1px solid var(--hairline); }
+  .flags code { background: none; padding: 0; color: var(--ink); }
+
+  ul.plain { list-style: none; }
+  ul.plain li { padding-left: 1.1rem; position: relative; }
+  ul.plain li + li { margin-top: .55rem; }
+  ul.plain li::before { content: "–"; position: absolute; left: 0; color: var(--faint); }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--hairline);
+    font-size: .82rem;
+    color: var(--faint);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="title"><span class="dollar">$</span> howto</div>
+    <p class="lede">Ask your terminal in plain words. It answers with a runnable
+    command — pre-typed at your prompt, explained, and never executed for you.</p>
+    <div class="meta">
+      <a href="https://github.com/C0ldSmi1e/howto">GitHub</a>
+      <a href="https://github.com/C0ldSmi1e/howto/blob/main/SPEC.md">Spec</a>
+      <a href="https://github.com/C0ldSmi1e/howto/releases/latest">Releases</a>
+    </div>
+  </header>
+
+  <div class="terminal" role="img" aria-label="Terminal demo: howto answers a plain-English question with a shell command, which lands pre-typed at the prompt.">
+<pre id="demo-screen"><span class="p">$</span> howto kill whatever is using port 3000
+<span class="cmd">lsof -ti:3000 | xargs kill -9</span>
+<span class="dim">  Find the process listening on port 3000 and force-kill it.</span>
+<span class="warn">  ⚠ SIGKILL gives the process no chance to clean up.</span>
+<span class="dim">  [2] kill $(lsof -ti:3000) — let it shut down cleanly</span>
+<span class="p">$</span> lsof -ti:3000 | xargs kill -9<span class="cursor"></span>  <span class="hint">← Enter runs it. Ctrl-C discards.</span></pre>
+  </div>
+
+  <section>
+    <h2>How it works</h2>
+    <p><strong>howto never runs anything.</strong> With the shell wrapper
+    installed, the answer lands pre-typed at your own prompt — Enter runs it,
+    your line editor edits it, Ctrl-C throws it away.</p>
+    <p>Answers are for <em>this machine</em>: it knows your OS, shell,
+    installed tools, and the project you're standing in — so "kill port 3000"
+    uses <code>lsof</code> on macOS and <code>fuser</code> where that's what
+    exists.</p>
+    <p>In pipes and scripts, stdout carries only the command; explanations go
+    to stderr. <code>-p</code> gives the bare command, <code>-j</code> JSON,
+    and exit codes mean something: <code>0</code> ok, <code>1</code> error,
+    <code>2</code> no sensible command.</p>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <ol class="steps" style="margin-top:1rem">
+      <li data-n="1">
+        Install the binary (macOS and Linux; or <code>cargo install --path .</code>):
+        <div class="copywrap">
+          <pre class="sh" id="curl-cmd">curl -LsSf https://github.com/C0ldSmi1e/howto/releases/latest/download/howto-installer.sh | sh</pre>
+          <button type="button" data-copy="curl-cmd">copy</button>
+        </div>
+      </li>
+      <li data-n="2">
+        Set your API key (<a href="https://platform.claude.com">platform.claude.com</a>):
+        <pre class="sh" style="margin-top:.5rem">export ANTHROPIC_API_KEY=sk-ant-...</pre>
+      </li>
+      <li data-n="3">
+        Add the wrapper — the part that puts commands at your prompt:
+        <pre class="sh" style="margin-top:.5rem"><span class="c"># ~/.zshrc   (bash: --init bash)</span>
+eval "$(howto --init zsh)"</pre>
+      </li>
+    </ol>
+  </section>
+
+  <section id="usage">
+    <h2>Usage</h2>
+    <p>No quotes, no subcommands — everything after <code>howto</code> is your
+    question.</p>
+    <pre class="sh" style="margin-top:.6rem">howto compress this folder into a tar.gz
+howto 2        <span class="c"># take option [2] from the last answer</span>
+howto --last   <span class="c"># show the last answer again — no API call</span></pre>
+    <div class="flags">
+      <div><code>-p, --print</code>    <span>bare command on stdout, nothing else</span></div>
+      <div><code>-j, --json</code>     <span>structured JSON, for scripts and agents</span></div>
+      <div><code>--explain</code>      <span>part-by-part breakdown</span></div>
+      <div><code>--last</code>         <span>re-show the last answer, commands numbered</span></div>
+      <div><code>--init &lt;shell&gt;</code> <span>print the shell wrapper (zsh, bash)</span></div>
+      <div><code>--config</code>       <span>config path and resolved settings</span></div>
+      <div><code>-v, --verbose</code>  <span>context, model, latency on stderr</span></div>
+    </div>
+  </section>
+
+  <section id="safety">
+    <h2>Safety</h2>
+    <ul class="plain">
+      <li>Nothing runs until you press Enter at your own prompt. There is no
+      <code>-y</code>, on purpose.</li>
+      <li>Risky commands carry a <code>⚠ reason</code>; a local blocklist
+      catches <code>rm -rf /</code>-class commands regardless of what the
+      model says.</li>
+      <li>High-danger commands are never pre-typed — they appear numbered, and
+      <code>howto 1</code> is the deliberate act that loads one.</li>
+    </ul>
+  </section>
+
+  <footer>
+    MIT license · built in Rust · powered by the Claude API
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  // copy buttons
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = document.getElementById(btn.dataset.copy).textContent.trim();
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = "copied";
+        setTimeout(function () { btn.textContent = "copy"; }, 1600);
+      });
+    });
+  });
+
+  // typing demo — the static first exchange above is the no-JS / reduced-motion fallback
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  var screen = document.getElementById("demo-screen");
+  var HINT = "← Enter runs it. Ctrl-C discards.";
+  var EXCHANGES = [
+    {
+      q: "kill whatever is using port 3000",
+      cmd: "lsof -ti:3000 | xargs kill -9",
+      lines: [
+        ["dim",  "  Find the process listening on port 3000 and force-kill it."],
+        ["warn", "  ⚠ SIGKILL gives the process no chance to clean up."],
+        ["dim",  "  [2] kill $(lsof -ti:3000) — let it shut down cleanly"]
+      ]
+    },
+    {
+      q: "compress this folder into a tar.gz",
+      cmd: "tar -czf archive.tar.gz .",
+      lines: [
+        ["dim", "  Create a gzip-compressed tarball of the current directory."],
+        ["dim", "  [2] tar -czf ../$(basename $PWD).tar.gz . — name it after the folder"]
+      ]
+    },
+    {
+      q: "find files changed today",
+      cmd: "find . -type f -mtime -1",
+      lines: [
+        ["dim", "  List files under here modified in the last 24 hours."],
+        ["dim", "  [2] find . -type f -newermt today — since midnight instead"]
+      ]
+    }
+  ];
+
+  function el(cls, text) {
+    var s = document.createElement("span");
+    if (cls) s.className = cls;
+    s.textContent = text;
+    return s;
+  }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  async function play(ex) {
+    screen.textContent = "";
+    var cursor = el("cursor", "");
+    var qNode = document.createTextNode("");
+    screen.append(el("p", "$"), document.createTextNode(" howto "), qNode, cursor);
+
+    for (var i = 0; i < ex.q.length; i++) {
+      qNode.textContent += ex.q[i];
+      await sleep(28 + Math.random() * 40);
+    }
+    await sleep(650);
+
+    cursor.remove();
+    screen.append(document.createTextNode("\n"), el("cmd", ex.cmd));
+    for (var j = 0; j < ex.lines.length; j++) {
+      screen.append(document.createTextNode("\n"), el(ex.lines[j][0], ex.lines[j][1]));
+      await sleep(120);
+    }
+    await sleep(500);
+
+    cursor = el("cursor", "");
+    screen.append(
+      document.createTextNode("\n"),
+      el("p", "$"),
+      document.createTextNode(" " + ex.cmd),
+      cursor,
+      document.createTextNode("  "),
+      el("hint", HINT)
+    );
+    await sleep(4800);
+  }
+
+  (async function loop() {
+    var n = 0;
+    for (;;) { await play(EXCHANGES[n++ % EXCHANGES.length]); }
+  })();
+})();
+</script>
+</body>
+</html>
